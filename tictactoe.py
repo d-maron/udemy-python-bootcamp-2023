@@ -85,7 +85,7 @@ drawBoard()
 
 while gameOn:
     chooseMove(currentPlayer)
-    if chooseMove == 'Q'
+    if chooseMove == 'Q':
         winner = -1
         gameOn = False
         break
@@ -96,7 +96,7 @@ while gameOn:
     currentPlayer = abs(currentPlayer-1)
 
 # Game over
-if winner = -1:
+if winner == -1:
     print('Thank you for playing.')
 else:
     print(f'Player {winner+1} has won the game!')
