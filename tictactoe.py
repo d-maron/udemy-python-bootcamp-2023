@@ -7,18 +7,23 @@ boardSpace = range(1,10)
 pieces = ('O','X')
 chosenPieces = {}
 currentPlayer = 0
+firstMove = 1
 
 currentBoard = [-1]*9   #Initialize board with no marks (-1)
 
-def drawBoard():
+def drawBoard(firstMove=0):
     dispCells = []
 
-    # Convert cell values to game pieces to display
-    for i in currentBoard:
-        show = ' '
-        if i != -1:
-            show = chosenPieces[i]
-        dispCells.append(show)
+    if firstMove:
+        dispCells = boardSpace
+        firstMove = 0
+    else:
+        # Convert cell values to game pieces to display
+        for i in currentBoard:
+            show = ' '
+            if i != -1:
+                show = chosenPieces[i]
+            dispCells.append(show)
 
     hLine = '---|---|---'
     board = ['',
@@ -81,12 +86,11 @@ def isWon():
 # Start the game
 chosenPieces = choosePiece()
 
-drawBoard()
+drawBoard(1)
 
 while gameOn:
-    chooseMove(currentPlayer)
-    if chooseMove == 'Q':
-        winner = -1
+    if chooseMove(currentPlayer) == 'Q':
+        winner = None
         gameOn = False
         break
     drawBoard()
@@ -96,7 +100,7 @@ while gameOn:
     currentPlayer = abs(currentPlayer-1)
 
 # Game over
-if winner == -1:
+if winner == None:
     print('Thank you for playing.')
 else:
     print(f'Player {winner+1} has won the game!')
