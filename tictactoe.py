@@ -4,8 +4,7 @@
 gameOn = True
 winner = None
 boardSpace = range(1,10)
-pieces = ('O','X')
-chosenPieces = {}
+chosenPieces = []
 currentPlayer = 0
 firstMove = 1
 
@@ -37,15 +36,15 @@ def drawBoard(firstMove=0):
 def choosePiece():
     choice = ''
 
-    while choice not in pieces:
+    while choice.upper() not in ['X','O']:
         choice = input("Player 1, please choose 'X' or 'O'.").upper()
     print()
     print(f"Player 1, your mark is '{choice}'. You will go first.")
 
     if choice == 'X':
-        return {0:'X',1:'O'}
+        return ['X','O']
     else:
-        return {0:'O',1:'X'}
+        return ['O','X']
 
 
 def chooseMove(player):
