@@ -4,13 +4,13 @@
 gameOn = True
 winner = None
 boardSpace = range(1,10)
-chosenPieces = []
 currentPlayer = 0
 firstMove = 1
 
-currentBoard = [-1]*9   #Initialize board with no marks (-1)
+currentBoard = [-1]*9   #Initialize board with empty cells
 
 def drawBoard(firstMove=0):
+    print('\n' * 100)     # clear board
     dispCells = []
 
     if firstMove:
@@ -42,9 +42,9 @@ def choosePiece():
     print(f"Player 1, your mark is '{choice}'. You will go first.")
 
     if choice == 'X':
-        return ['X','O']
+        return ('X','O')
     else:
-        return ['O','X']
+        return ('O','X')
 
 
 def chooseMove(player):
