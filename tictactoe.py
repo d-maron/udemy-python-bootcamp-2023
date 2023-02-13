@@ -6,11 +6,11 @@ winner = None
 boardSpace = range(1, 10)
 currentPlayer = 0
 firstMove = 1
-currentBoard = [-1]*9   # Initialize board with empty cells
+currentBoard = [-1] * 9  # Initialize board with empty cells
 
 
 def drawBoard(firstMove=0):
-    print('\n' * 100)     # clear board
+    print('\n' * 100)  # clear board
     dispCells = []
 
     if firstMove:
@@ -25,10 +25,15 @@ def drawBoard(firstMove=0):
             dispCells.append(show)
 
     hLine = '---|---|---'
-    board = ['',
-             f' {dispCells[6]} | {dispCells[7]} | {dispCells[8]} ', hLine,
-             f' {dispCells[3]} | {dispCells[4]} | {dispCells[5]} ', hLine,
-             f' {dispCells[0]} | {dispCells[1]} | {dispCells[2]} ', '']
+    board = [
+        '',
+        f' {dispCells[6]} | {dispCells[7]} | {dispCells[8]} ',
+        hLine,
+        f' {dispCells[3]} | {dispCells[4]} | {dispCells[5]} ',
+        hLine,
+        f' {dispCells[0]} | {dispCells[1]} | {dispCells[2]} ',
+        '',
+    ]
 
     for row in board:
         print(row)
@@ -55,11 +60,13 @@ def cellIsEmpty(pos):
 def chooseMove(player):
     choice = ''
     while choice not in boardSpace:
-        choice = input(f"Player {player+1}, "
-                       f"choose where to put your mark (1-9) Type Q to quit.")
+        choice = input(
+            f"Player {player+1}, "
+            f"choose where to put your mark (1-9) Type Q to quit."
+        )
         if choice.isdigit():
             choice = int(choice) - 1
-            if choice+1 in boardSpace:
+            if choice + 1 in boardSpace:
                 if not cellIsEmpty(choice):
                     print(f"Space {choice+1} is already marked.")
                 else:
@@ -76,9 +83,16 @@ def chooseMove(player):
 
 
 def isWon():
-    winPatterns = [[0, 1, 2], [3, 4, 5], [6, 7, 8],     # Horizontals
-                   [0, 3, 6], [1, 4, 7], [2, 5, 8],     # Verticals
-                   [0, 4, 8], [2, 4, 6]]                # Diagonals
+    winPatterns = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],  # Horizontals
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],  # Verticals
+        [0, 4, 8],
+        [2, 4, 6],
+    ]  # Diagonals
 
     for pattern in winPatterns:
         matchCount = 0
@@ -104,7 +118,7 @@ while gameOn:
     winner = isWon()
     if winner is not None:
         gameOn = False
-    currentPlayer = abs(currentPlayer-1)  # Switch players
+    currentPlayer = abs(currentPlayer - 1)  # Switch players
 
 # Game over
 if winner is None:
