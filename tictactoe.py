@@ -6,7 +6,6 @@ winner = None
 boardSpace = range(1, 10)
 currentPlayer = 0
 firstMove = 1
-
 currentBoard = [-1]*9   # Initialize board with empty cells
 
 
@@ -22,7 +21,7 @@ def drawBoard(firstMove=0):
         for i in currentBoard:
             show = ' '
             if i != -1:
-                show = chosenPieces[i]
+                show = chosenPiece[i]
             dispCells.append(show)
 
     hLine = '---|---|---'
@@ -38,7 +37,7 @@ def drawBoard(firstMove=0):
 def choosePiece():
     choice = ''
 
-    while choice.upper() not in ['X', 'O']:
+    while choice.upper() not in ('X', 'O'):
         choice = input("Player 1, please choose 'X' or 'O'.").upper()
     print()
     print(f"Player 1, your mark is '{choice}'. You will go first.")
@@ -49,6 +48,10 @@ def choosePiece():
         return ('O', 'X')
 
 
+def cellIsEmpty(pos):
+    return currentBoard[pos] == -1
+
+
 def chooseMove(player):
     choice = ''
     while choice not in boardSpace:
@@ -57,7 +60,7 @@ def chooseMove(player):
         if choice.isdigit():
             choice = int(choice) - 1
             if choice+1 in boardSpace:
-                if currentBoard[choice] in range(0, 2):
+                if not cellIsEmpty(choice):
                     print(f"Space {choice+1} is already marked.")
                 else:
                     choice = int(choice)
@@ -88,7 +91,7 @@ def isWon():
 
 
 # Start the game
-chosenPieces = choosePiece()
+chosenPiece = choosePiece()
 
 drawBoard(1)
 
@@ -101,7 +104,7 @@ while gameOn:
     winner = isWon()
     if winner is not None:
         gameOn = False
-    currentPlayer = abs(currentPlayer-1)
+    currentPlayer = abs(currentPlayer-1)  # Switch players
 
 # Game over
 if winner is None:
