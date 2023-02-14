@@ -3,35 +3,34 @@
 # Globals
 gameOn = True
 winner = None
-boardSpace = range(1, 10)
-currentPlayer = 0
-firstMove = 1
-currentBoard = [-1] * 9  # Initialize board with empty cells
+board_space = range(1, 10)
+current_player = 0
+first_move = 1
+current_board = [-1] * 9  # Initialize board with empty cells
 
 
-def drawBoard(firstMove=0):
+def draw_board(first=0):
     print('\n' * 100)  # clear board
-    dispCells = []
+    cells_display = []
 
-    if firstMove:
-        dispCells = boardSpace
-        firstMove = 0
+    if first:
+        cells_display = board_space
     else:
         # Convert cell values to game pieces to display
-        for i in currentBoard:
+        for i in current_board:
             show = ' '
             if i != -1:
                 show = chosenPiece[i]
-            dispCells.append(show)
+            cells_display.append(show)
 
-    hLine = '---|---|---'
+    hline = '---|---|---'
     board = [
         '',
-        f' {dispCells[6]} | {dispCells[7]} | {dispCells[8]} ',
-        hLine,
-        f' {dispCells[3]} | {dispCells[4]} | {dispCells[5]} ',
-        hLine,
-        f' {dispCells[0]} | {dispCells[1]} | {dispCells[2]} ',
+        f' {cells_display[6]} | {cells_display[7]} | {cells_display[8]} ',
+        hline,
+        f' {cells_display[3]} | {cells_display[4]} | {cells_display[5]} ',
+        hline,
+        f' {cells_display[0]} | {cells_display[1]} | {cells_display[2]} ',
         '',
     ]
 
@@ -39,7 +38,7 @@ def drawBoard(firstMove=0):
         print(row)
 
 
-def choosePiece():
+def choosepiece():
     choice = ''
 
     while choice.upper() not in ('X', 'O'):
@@ -48,27 +47,27 @@ def choosePiece():
     print(f"Player 1, your mark is '{choice}'. You will go first.")
 
     if choice == 'X':
-        return ('X', 'O')
+        return 'X', 'O'
     else:
-        return ('O', 'X')
+        return 'O', 'X'
 
 
-def cellIsEmpty(pos):
-    return currentBoard[pos] == -1
+def cell_is_empty(pos):
+    return current_board[pos] == -1
 
 
-def chooseMove(player):
+def choose_move(player):
     choice = ''
-    while choice not in boardSpace:
+    while choice not in board_space:
         choice = input(
-            f"Player {player+1}, "
+            f"Player {player + 1}, "
             f"choose where to put your mark (1-9) Type Q to quit."
         )
         if choice.isdigit():
             choice = int(choice) - 1
-            if choice + 1 in boardSpace:
-                if not cellIsEmpty(choice):
-                    print(f"Space {choice+1} is already marked.")
+            if choice + 1 in board_space:
+                if not cell_is_empty(choice):
+                    print(f"Space {choice + 1} is already marked.")
                 else:
                     choice = int(choice)
                     break
@@ -79,11 +78,11 @@ def chooseMove(player):
         print("Invalid input. Please choose a number from 1-9.")
         choice = ''
 
-    currentBoard[choice] = player
+    current_board[choice] = player
 
 
-def isWon():
-    winPatterns = [
+def is_won():
+    win_patterns = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],  # Horizontals
@@ -94,34 +93,34 @@ def isWon():
         [2, 4, 6],
     ]  # Diagonals
 
-    for pattern in winPatterns:
-        matchCount = 0
+    for pattern in win_patterns:
+        match_count = 0
         for i in pattern:
-            if currentBoard[i] == currentPlayer:
-                matchCount += 1
-            if matchCount == 3:
-                return currentPlayer
+            if current_board[i] == current_player:
+                match_count += 1
+            if match_count == 3:
+                return current_player
     return None
 
 
 # Start the game
-chosenPiece = choosePiece()
+chosenPiece = choosepiece()
 
-drawBoard(1)
+draw_board(1)
 
 while gameOn:
-    if chooseMove(currentPlayer) == 'Q':
+    if choose_move(current_player) == 'Q':
         winner = None
         gameOn = False
         break
-    drawBoard()
-    winner = isWon()
+    draw_board()
+    winner = is_won()
     if winner is not None:
         gameOn = False
-    currentPlayer = abs(currentPlayer - 1)  # Switch players
+    current_player = abs(current_player - 1)  # Switch players
 
 # Game over
 if winner is None:
     print('Thank you for playing.')
 else:
-    print(f'Player {winner+1} has won the game!')
+    print(f'Player {winner + 1} has won the game!')
