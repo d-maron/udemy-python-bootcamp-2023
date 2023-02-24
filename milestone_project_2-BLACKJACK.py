@@ -50,12 +50,27 @@ class Player:
         self.hand = []
         self.chips = 100
         self.bet = 0
-        self.view = f'Player #{self.number} \'{self.name}\' has {self.chips} '\
-               f'chips'
 
     def draw_card(self, num=1):
         for n in range(0, num):
             self.hand.append(deck.cards.pop())
+
+    def place_bet(self):
+        valid = None
+        while not valid:
+            valid = input(f'{self.name}, what is your bet? ')
+            if valid.isdigit():
+                valid = int(valid)
+                if valid <= self.chips:
+                    self.bet += valid
+                    self.chips -= valid
+                    break
+            valid = None
+            print(f'Please enter a valid wager up to {self.chips}')
+
+    def view(self):
+        print(f'Player #{self.number} \'{self.name}\' has {self.chips} '
+               f'chips')
 
 
 
@@ -86,39 +101,20 @@ def get_players():
 
 
 def deal(num):
-
-    for p in num:
-        p.draw_card(2)
-
-
-def place_bet(pnum):
-    plyr = players[pnum]
-    valid = None
-    while not valid:
-        valid = input(f'{plyr.name}, what is your bet? ')
-        if valid.isdigit():
-            valid = int(valid)
-            if valid <= plyr.chips:
-                plyr.bet += valid
-                plyr.chips -= valid
-                break
-
-        valid = None
-        print(f'Please enter a valid wager up to {plyr.chips}')
+    for p in range(0, num):
+        players[p].draw_card(2)
 
 
 # INITIAL SETUP
 players = Player('Dealer', 0)
-get_players()
+players = get_players()
+players[0].chips = 0    # Dealer has no chips
 
 deck = Deck()
 deck.shuffle()
 deal(len(players))
 
-for p in players:
-    print(p)
-
-place_bet(1)
+players[1].place_bet()
 print(players[0].bet)
 for p in players:
     p.view()
