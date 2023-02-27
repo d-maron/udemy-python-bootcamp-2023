@@ -10,9 +10,10 @@ faces = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
 values = {'Two': 2, 'Three': 3, 'Four': 4, 'Five': 5, 'Six': 6, 'Seven': 7,
           'Eight': 8, 'Nine': 9, 'Ten': 10, 'Jack': 10, 'Queen': 10,
           'King': 10, 'Ace': 11}
-game_on = True
 
 # DEFINE CLASSES
+
+
 class Card:
 
     def __init__(self, face, suit):
@@ -27,33 +28,40 @@ class Card:
 class Deck:
 
     def __init__(self):
-
         self.cards = []
         for suit in suits:
             for face in faces:
                 self.cards.append(Card(face, suit))
 
     def __str__(self):
-
         return str(len(self.cards))
 
     def shuffle(self):
-
         random.shuffle(self.cards)
 
 
 class Player:
 
-    def __init__(self, name, number):
+    def __init__(self, name, number, chips=100):
         self.name = name
         self.number = number
-        self.hand = []
-        self.chips = 100
+        self.cards = []
+        self.chips = chips
         self.bet = 0
+        self.total = 0
+
+    def view_cards(self):
+        print(f'{self.name}\'s cards:')
+        for card in self.cards:
+            print('    ', card)
+        # print(f'{self.name}\'s hand totals {self.total}.')
+
+    def view_chips(self):
+        print(f'{self.name} has {self.chips} chips.')
 
     def draw_card(self, num=1):
         for n in range(0, num):
-            self.hand.append(deck.cards.pop())
+            self.cards.append(deck.cards.pop())
 
     def place_bet(self):
         valid = None
@@ -68,10 +76,32 @@ class Player:
             valid = None
             print(f'Please enter a valid wager up to {self.chips}')
 
-    def view(self):
-        print(f'Player #{self.number} \'{self.name}\' has {self.chips} '
-               f'chips')
+    def choose_move(self):
+        choice = ''
+        while choice == '':
+            tmp = input(f'Player {self.number}, hit or stand? (h/s) ')
+            if tmp.lower() == 'h':
+                choice = 'hit'
+            elif tmp.lower() == 's':
+                choice = 'stand'
+            else:
+                print('Please choose \'h\' or \'s\'.')
+        print(f'{self.name} chooses to {choice.upper()}.')
+        return choice
 
+    def check_total(self, show=0):
+        total = 0
+        for i in self.cards:
+            total += i.value
+        if total > 21:
+            for c in self.cards:
+                if c.face == 'Ace':
+                    total -= 10
+        self.total = total
+
+        if show:
+            print(f'{self.name}\'s hand totals {self.total}.')
+        return total
 
 
 def howmanyplayers():
@@ -90,8 +120,9 @@ def howmanyplayers():
 
 
 def get_players():
-    tmp = [Player('Dealer', 0)]
-    n = howmanyplayers()
+    tmp = [Player('Dealer', 0, 0)]
+    # n = howmanyplayers()
+    n = 1
     for i in range(1, n + 1):
         name = ''
         while not name:
@@ -101,20 +132,52 @@ def get_players():
 
 
 def deal(num):
-    for p in range(0, num):
+    players[0].draw_card(1)      # Dealer draws one
+    players[0].check_total()
+    for p in range(1, num):
         players[p].draw_card(2)
+        players[p].check_total()
 
 
 # INITIAL SETUP
-players = Player('Dealer', 0)
 players = get_players()
-players[0].chips = 0    # Dealer has no chips
-
 deck = Deck()
 deck.shuffle()
 deal(len(players))
 
-players[1].place_bet()
-print(players[0].bet)
-for p in players:
-    p.view()
+## PLAY GAME
+game_on = True
+
+while game_on:
+    for p in players[1:]:
+        move = 'hit'
+        while move == 'hit':
+            if p.number == 0:       # Dealer
+                move = 'stand'
+            else:
+                players[0].view_cards()
+                p.view_cards()
+                move = p.choose_move()
+
+            if move == 'hit':
+                p.draw_card()
+                total = p.check_total(1)
+                if total > 21:
+                    print(F'BUST! {p.name} is out of the game!')
+                    players.remove(p)
+                    if len(players) == 1:       # Only Dealer remains
+                        game_on = False
+                        break
+            elif move == 'stand':
+                if total > players[0].total:
+                    print(f'{p.name.upper()} HAS WON THE GAME!')
+                    print('FINAL SCORE:')
+                    print(f'  Dealer: {players[0].total}')
+                    print(f'  {p.name}: {p.total}')
+                    game_on = False
+                    break
+            break
+
+# for p in players:
+    # p.view_cards()
+    # p.view_chips()
