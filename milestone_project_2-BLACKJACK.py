@@ -90,18 +90,17 @@ class Player:
         return choice
 
     def check_total(self, show=0):
-        total = 0
+        t = 0
         for i in self.cards:
-            total += i.value
-        if total > 21:
-            for c in self.cards:
-                if c.face == 'Ace':
-                    total -= 10
-        self.total = total
+            t += i.value
+            if t > 21:
+                if i.face == 'Ace':
+                    t -= 10
+        self.total = t
 
         if show:
             print(f'{self.name}\'s hand totals {self.total}.')
-        return total
+        return t
 
 
 def howmanyplayers():
@@ -121,8 +120,8 @@ def howmanyplayers():
 
 def get_players():
     tmp = [Player('Dealer', 0, 0)]
-    # n = howmanyplayers()
-    n = 1
+    n = howmanyplayers()
+    # n = 1
     for i in range(1, n + 1):
         name = ''
         while not name:
@@ -145,7 +144,7 @@ deck = Deck()
 deck.shuffle()
 deal(len(players))
 
-## PLAY GAME
+# PLAY GAME
 game_on = True
 
 while game_on:
@@ -158,11 +157,14 @@ while game_on:
                 players[0].view_cards()
                 p.view_cards()
                 move = p.choose_move()
+                total = p.check_total()
 
             if move == 'hit':
                 p.draw_card()
-                total = p.check_total(1)
+                total = p.check_total(0)
                 if total > 21:
+                    p.view_cards()
+                    print(f'{p.name}\'s total is {p.total}')
                     print(F'BUST! {p.name} is out of the game!')
                     players.remove(p)
                     if len(players) == 1:       # Only Dealer remains
@@ -178,6 +180,3 @@ while game_on:
                     break
             break
 
-# for p in players:
-    # p.view_cards()
-    # p.view_chips()
