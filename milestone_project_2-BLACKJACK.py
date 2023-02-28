@@ -39,6 +39,9 @@ class Deck:
     def shuffle(self):
         random.shuffle(self.cards)
 
+    def deal(self):
+        return self.cards.pop()
+
 
 class Player:
 
@@ -50,29 +53,46 @@ class Player:
         self.bet = 0
         self.total = 0
 
-    def view_cards(self):
-        print(f'{self.name}\'s cards:', *self.cards, sep="\n    ")
-        # shortcut from course instructor
+    def show_cards(self, hide_hole=0):
+        print(f'{self.name}\'s cards:')
+        for i in range(hide_hole, len(self.cards)):
+            print('    ' + str(self.cards[i]))
+        if hide_hole:
+            print('    One card hidden!')
 
     def view_chips(self):
         print(f'{self.name} has {self.chips} chips.')
 
     def draw_card(self, num=1):
         for n in range(0, num):
-            self.cards.append(deck.cards.pop())
+            self.cards.append(deck.deal())
+
+    def hit(self):
+        print(f'{self.name} chooses to HIT.')
+        self.draw_card()
+        self.update_total()
 
     def place_bet(self):
-        valid = None
-        while not valid:
-            valid = input(f'{self.name}, what is your bet? ')
-            if valid.isdigit():
-                valid = int(valid)
-                if valid <= self.chips:
-                    self.bet += valid
-                    self.chips -= valid
+        while True:
+            try:
+                wager = int(input(f'{self.name}, what is your bet? '))
+            except TypeError:
+                print(f'Please enter a valid wager up to {self.chips}')
+            else:
+                if wager <= self.chips:
+                    self.bet += wager
+                    self.chips -= wager
                     break
-            valid = None
-            print(f'Please enter a valid wager up to {self.chips}')
+                else:
+                    print(f'You only have {self.chips} chips!')
+
+    def win_bet(self):
+        print(f'{self.name} wins {self.bet} chips')
+        self.chips += self.bet
+
+    def lose_bet(self):
+        print(f'{self.name} loses {self.bet} chips')
+        self.chips -= self.bet
 
     def choose_move(self):
         choice = ''
@@ -87,7 +107,7 @@ class Player:
         print(f'{self.name} chooses to {choice.upper()}.')
         return choice
 
-    def check_total(self, show=0):
+    def update_total(self):
         t = 0
         for i in self.cards:
             t += i.value
@@ -95,10 +115,10 @@ class Player:
                 if i.face == 'Ace':
                     t -= 10
         self.total = t
+        return self.total
 
-        if show:
-            print(f'{self.name}\'s hand totals {self.total}.')
-        return t
+    def show_total(self):
+        print(f'{self.name}\'s hand totals {self.total}.')
 
 
 def howmanyplayers():
@@ -128,12 +148,10 @@ def get_players():
     return tmp
 
 
-def deal(num):
-    players[0].draw_card(1)      # Dealer draws one
-    players[0].check_total()
-    for p in range(1, num):
-        players[p].draw_card(2)
-        players[p].check_total()
+def deal(num=2):
+    for p in players:
+        p.draw_card(num)
+        p.update_total()
 
 
 # INITIAL SETUP
@@ -147,33 +165,35 @@ game_on = True
 
 while game_on:
     for p in players[1:]:
-        move = 'hit'
-        while move == 'hit':
+        p.place_bet()
+        while True:
             if p.number == 0:       # Dealer
                 move = 'stand'
+                break
             else:
-                players[0].view_cards()
-                p.view_cards()
+                players[0].show_cards(hide_hole=1)  # Show dealer's card
+                p.show_cards()  # Show player's cards
                 move = p.choose_move()
-                total = p.check_total()
+                total = p.update_total()
 
             if move == 'hit':
-                p.draw_card()
-                total = p.check_total(0)
+                p.hit()
+                total = p.total
                 if total > 21:
-                    p.view_cards()
+                    p.show_cards()
                     print(f'{p.name}\'s total is {p.total}')
                     print(F'BUST! {p.name} is out of the game!')
                     players.remove(p)
                     if len(players) == 1:       # Only Dealer remains
                         game_on = False
-                        break
-            elif move == 'stand':
+                    break
+                move = 'stand'
+            else:       # Stand
                 if total > players[0].total:
                     print(f'{p.name.upper()} HAS WON THE GAME!')
                     print('FINAL SCORE:')
                     print(f'  Dealer: {players[0].total}')
                     print(f'  {p.name}: {p.total}')
                     game_on = False
-                    break
+                break
             break
