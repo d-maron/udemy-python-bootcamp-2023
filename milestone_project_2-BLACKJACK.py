@@ -51,10 +51,8 @@ class Player:
         self.total = 0
 
     def view_cards(self):
-        print(f'{self.name}\'s cards:')
-        for card in self.cards:
-            print('    ', card)
-        # print(f'{self.name}\'s hand totals {self.total}.')
+        print(f'{self.name}\'s cards:', *self.cards, sep="\n    ")
+        # shortcut from course instructor
 
     def view_chips(self):
         print(f'{self.name} has {self.chips} chips.')
@@ -80,9 +78,9 @@ class Player:
         choice = ''
         while choice == '':
             tmp = input(f'Player {self.number}, hit or stand? (h/s) ')
-            if tmp.lower() == 'h':
+            if tmp[0].lower() == 'h':
                 choice = 'hit'
-            elif tmp.lower() == 's':
+            elif tmp[0].lower() == 's':
                 choice = 'stand'
             else:
                 print('Please choose \'h\' or \'s\'.')
@@ -120,8 +118,8 @@ def howmanyplayers():
 
 def get_players():
     tmp = [Player('Dealer', 0, 0)]
-    n = howmanyplayers()
-    # n = 1
+    # n = howmanyplayers()
+    n = 1
     for i in range(1, n + 1):
         name = ''
         while not name:
@@ -179,4 +177,3 @@ while game_on:
                     game_on = False
                     break
             break
-
