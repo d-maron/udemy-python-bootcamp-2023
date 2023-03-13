@@ -2,7 +2,6 @@ import requests, bs4, lxml
 
 base_url = 'http://quotes.toscrape.com/page/{}'
 
-quote_parent = '.quote'
 quote_class = '.text'
 top_tag_parent = '.tag-item'
 
@@ -14,25 +13,24 @@ page = 1
 while True:
     url = base_url.format(page)
     res = requests.get(url)
-    soup = bs4.BeautifulSoup(res.content, 'lxml')
-    if 'No quotes found!' in soup.text:
+    if 'No quotes found!' in res.text:
         break
 
+    soup = bs4.BeautifulSoup(res.text, 'lxml')
     auth_tmp = soup.select('.author')
     for i in auth_tmp:
         authors.update(i.contents)
 
-    quotes_tmp = soup.select(quote_parent)
+    quotes_tmp = soup.select(quote_class)
     for q in quotes_tmp:
-        for item in q.select(quote_class):
-            quotes.append(item.text)
+        quotes.append(q.text)
     page += 1
 
 
 tags_tmp = soup.select(top_tag_parent)
 for t in tags_tmp:
     for item in t.select('a'):
-        top_tags.append(item.contents[0])
+        top_tags.append(item.text)
 
 print('\nAUTHORS:\n', authors)
 print('\nQUOTES:\n', quotes)
